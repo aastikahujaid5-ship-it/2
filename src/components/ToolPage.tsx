@@ -28,31 +28,43 @@ export function ToolPage({ toolId, onClose }: ToolPageProps) {
       title: 'Nmap Network Scanner',
       description: 'Advanced network discovery and security auditing tool',
       icon: '🔍',
+      explanation: 'Nmap is like a detective for computer networks. It scans devices connected to a network to find out what services they are running and which ports are open. Think of ports as different doors on a building - Nmap checks which doors are open and what is behind them. Security professionals use this to find vulnerabilities before hackers do.',
+      useCases: ['Finding open ports on a network', 'Identifying running services and their versions', 'Detecting operating systems', 'Network inventory and security audits'],
     },
     wireshark: {
       title: 'Wireshark Packet Analyzer',
       description: 'Capture and analyze network traffic in real-time',
       icon: '📡',
+      explanation: 'Wireshark captures and displays all the data traveling through your network in real-time. Imagine being able to see every conversation happening on your network - who is talking to whom, what they are saying, and which protocol they use. This helps diagnose network problems and detect suspicious activity.',
+      useCases: ['Troubleshooting network issues', 'Analyzing network protocols', 'Detecting security threats', 'Learning how network communication works'],
     },
     encryption: {
       title: 'File Encryption Tool',
       description: 'Encrypt sensitive files using AES-256 encryption',
       icon: '🔐',
+      explanation: 'Encryption turns your readable text into scrambled code that only someone with the correct key can decode. It is like putting your message in a locked safe - even if someone steals the safe, they cannot read the message without the key. AES-256 is one of the strongest encryption methods available today.',
+      useCases: ['Protecting sensitive documents', 'Securing confidential messages', 'Encrypting files before sharing', 'Meeting compliance requirements'],
     },
     decryption: {
       title: 'File Decryption Tool',
       description: 'Decrypt encrypted files with the correct key',
       icon: '🔓',
+      explanation: 'Decryption is the reverse of encryption - it takes scrambled code and turns it back into readable text using the correct key. You need the exact same key that was used to encrypt the data. Without the right key, the encrypted data remains unreadable.',
+      useCases: ['Reading encrypted messages', 'Accessing protected files', 'Recovering encrypted data', 'Verifying encryption worked correctly'],
     },
     hash: {
       title: 'Cryptographic Hash Generator',
       description: 'Generate secure hashes (MD5, SHA-1, SHA-256)',
       icon: '#️⃣',
+      explanation: 'Hashing is like creating a unique fingerprint for data. No matter how large the file or text, the hash is always the same fixed length. Even a tiny change in the original data creates a completely different hash. This makes hashes perfect for verifying data has not been tampered with.',
+      useCases: ['Verifying file integrity', 'Storing passwords securely', 'Digital signatures', 'Detecting duplicate files'],
     },
     password: {
       title: 'Password Strength Analyzer',
       description: 'Test and improve your password security',
       icon: '🔑',
+      explanation: 'This tool checks how strong your password is by looking at its length, complexity, and patterns. Strong passwords are long, use different types of characters, and avoid common words or patterns. A weak password is like using a simple lock on your front door - easy for attackers to break.',
+      useCases: ['Testing new passwords before using them', 'Understanding password requirements', 'Learning what makes passwords strong', 'Improving your security habits'],
     },
   };
 
@@ -61,9 +73,90 @@ export function ToolPage({ toolId, onClose }: ToolPageProps) {
   const handleNmapScan = () => {
     setScanning(true);
     setTimeout(() => {
-      setResults(`Starting Nmap scan on ${target}...\n\nStarting Nmap 7.92\nNmap scan report for ${target}\nHost is up (0.045s latency).\nNot shown: 995 closed ports\nPORT     STATE    SERVICE      VERSION\n22/tcp   open     ssh          OpenSSH 7.4\n80/tcp   open     http         Apache 2.4.6\n443/tcp  open     https        Apache 2.4.6\n3306/tcp open     mysql        MySQL 5.7.32\n5432/tcp open     postgresql   PostgreSQL 11.9\n\nService detection performed. Please report any incorrect results at https://nmap.org/submit/`);
+      const targetLower = target.toLowerCase();
+      const randomLatency = (Math.random() * 0.15 + 0.02).toFixed(3);
+      const scanTime = (Math.random() * 3 + 1).toFixed(2);
+
+      let ports: Array<{port: number; service: string; version: string}> = [];
+      let hostType = 'unknown';
+      let os = '';
+
+      if (targetLower.includes('google') || targetLower.includes('facebook') || targetLower.includes('amazon')) {
+        hostType = 'web-server';
+        ports = [
+          { port: 80, service: 'http', version: 'nginx 1.21.6' },
+          { port: 443, service: 'https', version: 'nginx 1.21.6 (SSL)' },
+        ];
+        os = 'OS: Linux 4.x|5.x';
+      } else if (targetLower.includes('192.168') || targetLower.includes('10.0') || targetLower.includes('172.16')) {
+        hostType = 'local-network';
+        const portOptions = [
+          { port: 22, service: 'ssh', version: 'OpenSSH 8.2p1' },
+          { port: 80, service: 'http', version: 'Apache httpd 2.4.41' },
+          { port: 443, service: 'https', version: 'Apache httpd 2.4.41' },
+          { port: 445, service: 'microsoft-ds', version: 'Windows SMB' },
+          { port: 3306, service: 'mysql', version: 'MySQL 5.7.35' },
+          { port: 3389, service: 'ms-wbt-server', version: 'Microsoft Terminal Services' },
+          { port: 5432, service: 'postgresql', version: 'PostgreSQL DB 11.14' },
+          { port: 8080, service: 'http-proxy', version: 'Squid http proxy 4.13' },
+        ];
+        const numPorts = Math.floor(Math.random() * 4) + 2;
+        ports = portOptions.sort(() => Math.random() - 0.5).slice(0, numPorts).sort((a, b) => a.port - b.port);
+        os = Math.random() > 0.5 ? 'OS: Linux 3.2 - 4.9' : 'OS: Microsoft Windows 10 1607';
+      } else if (targetLower.includes('localhost') || targetLower === '127.0.0.1') {
+        hostType = 'localhost';
+        ports = [
+          { port: 22, service: 'ssh', version: 'OpenSSH 8.9p1' },
+          { port: 80, service: 'http', version: 'nginx 1.22.0' },
+          { port: 443, service: 'https', version: 'nginx 1.22.0' },
+          { port: 3000, service: 'http', version: 'Node.js Express' },
+          { port: 5432, service: 'postgresql', version: 'PostgreSQL 14.5' },
+          { port: 6379, service: 'redis', version: 'Redis 7.0.4' },
+        ];
+        os = 'OS: Linux 5.15.0';
+      } else {
+        hostType = 'generic';
+        const possiblePorts = [
+          { port: 21, service: 'ftp', version: 'vsftpd 3.0.3' },
+          { port: 22, service: 'ssh', version: 'OpenSSH 7.9p1' },
+          { port: 25, service: 'smtp', version: 'Postfix smtpd' },
+          { port: 53, service: 'domain', version: 'ISC BIND 9.11.4' },
+          { port: 80, service: 'http', version: 'Apache httpd 2.4.38' },
+          { port: 110, service: 'pop3', version: 'Dovecot pop3d' },
+          { port: 143, service: 'imap', version: 'Dovecot imapd' },
+          { port: 443, service: 'https', version: 'Apache httpd 2.4.38' },
+          { port: 3306, service: 'mysql', version: 'MySQL 5.7.28' },
+          { port: 5432, service: 'postgresql', version: 'PostgreSQL 11.5' },
+          { port: 8080, service: 'http-proxy', version: 'Jetty 9.4.31' },
+        ];
+        const numPorts = Math.floor(Math.random() * 5) + 3;
+        ports = possiblePorts.sort(() => Math.random() - 0.5).slice(0, numPorts).sort((a, b) => a.port - b.port);
+        os = 'OS: Linux 3.x|4.x';
+      }
+
+      const totalPorts = 1000;
+      const closedPorts = totalPorts - ports.length;
+
+      let result = `Starting Nmap 7.94 ( https://nmap.org ) at ${new Date().toLocaleString()}\n`;
+      result += `Nmap scan report for ${target}\n`;
+      result += `Host is up (${randomLatency}s latency).\n`;
+      result += `Not shown: ${closedPorts} closed ports\n\n`;
+      result += `PORT     STATE SERVICE       VERSION\n`;
+
+      ports.forEach(p => {
+        const portStr = `${p.port}/tcp`.padEnd(8);
+        const stateStr = 'open'.padEnd(8);
+        const serviceStr = p.service.padEnd(13);
+        result += `${portStr} ${stateStr} ${serviceStr} ${p.version}\n`;
+      });
+
+      result += `\n${os}\n`;
+      result += `\nService detection performed. Scan took ${scanTime} seconds.\n`;
+      result += `Nmap done: 1 IP address (1 host up) scanned in ${scanTime} seconds`;
+
+      setResults(result);
       setScanning(false);
-    }, 2000);
+    }, 2500);
   };
 
   const handleWiresharkCapture = () => {
@@ -173,6 +266,22 @@ export function ToolPage({ toolId, onClose }: ToolPageProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
+          <h3 className="text-lg font-bold text-blue-900 mb-3">What is this tool?</h3>
+          <p className="text-blue-800 mb-4">{info.explanation}</p>
+          <div>
+            <p className="text-sm font-semibold text-blue-900 mb-2">Common Uses:</p>
+            <ul className="space-y-1">
+              {info.useCases.map((useCase, index) => (
+                <li key={index} className="text-sm text-blue-800 flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>{useCase}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
         {toolId === 'nmap' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
